@@ -1,5 +1,7 @@
 package util;
 
+import org.slf4j.Logger;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -9,6 +11,7 @@ import java.io.StringWriter;
  * 16/01/17 21:51
  */
 public class ExceptionUtil {
+    private static Logger EXCEPTION = LogUtil.getExceptionLogger();
 
     /**
      * Gets stack trace string.

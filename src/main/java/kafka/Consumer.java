@@ -5,6 +5,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import service.Service;
 
@@ -59,7 +60,7 @@ public class Consumer {
         if (!records.isEmpty()) {
             for (ConsumerRecord<String, String> record : records) {
                 if (this.getTopicList().get(0).equals(record.topic())) {
-                    this.service.insertMessage(record.value());
+                    this.service.parseMessage(record.value());
                 }
             }
         }

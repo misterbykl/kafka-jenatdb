@@ -1,9 +1,11 @@
 import config.MainConfig;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
+import kafka.ConsumerConfig;
+import org.slf4j.Logger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import service.ServiceConfig;
 import util.ApplicationUtil;
 import util.ExceptionUtil;
+import util.LogUtil;
 
 /**
  * misterbaykal
@@ -11,6 +13,8 @@ import util.ExceptionUtil;
  * 16/01/17 21:32
  */
 public class Main {
+    private static Logger LOG = LogUtil.getRootLogger();
+
     /**
      * The entry point of application.
      *

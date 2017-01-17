@@ -25,7 +25,7 @@ public class ServiceConfig {
      * 16/01/17 21:55
      */
     @Bean
-    public Service service(@Value("${jenatdb.config.1}") String config1, @Value("${jenatdb.config.2}") String config2) {
-        return new Service(config1, config2);
+    public Service service(@Value("${jenatdb.config.modelname}") String modelName, @Value("${jenatdb.config.path}") String path) {
+        return new Service(modelName, path);
     }
 }
