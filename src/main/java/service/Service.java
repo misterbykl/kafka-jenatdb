@@ -1,6 +1,8 @@
 package service;
 
 import org.apache.jena.query.Dataset;
+import org.apache.jena.query.DatasetAccessor;
+import org.apache.jena.query.DatasetAccessorFactory;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
@@ -15,23 +17,38 @@ import util.LogUtil;
  * 16/01/17 21:55
  */
 public class Service {
+    private final String LOCAL = "local";
+    private final String HTTP = "http";
     private static Logger LOG = LogUtil.getRootLogger();
+    private String dataAccessMode = null;
     private Dataset ds;
-    private String modelName = null;
+    private DatasetAccessor dsAccessor;
+    private Model model = null;
+
 
     /**
      * Instantiates a new Service.
      *
-     * @param modelName the model name
-     * @param path      the path
-     *                  <p>
-     *                  misterbaykal
-     *                  <p>
-     *                  16/01/17 21:56
+     * @param modelName      the model name
+     * @param path           the path
+     * @param dataAccessMode the data access mode
+     * @param serviceUri     the service uri
+     *                       <p>
+     *                       <p>
+     *                       misterbaykal
+     *                       <p>
+     *                       20/01/17 15:20
      */
-    Service(String modelName, String path) {
-        this.modelName = modelName;
-        ds = TDBFactory.createDataset(path);
+    Service(String modelName, String path, String dataAccessMode, String serviceUri) {
+        this.dataAccessMode = dataAccessMode;
+        if (LOCAL.equalsIgnoreCase(dataAccessMode)) {
+            this.ds = TDBFactory.createDataset(path);
+            this.model = ds.getNamedModel(modelName);
+            this.ds.begin(ReadWrite.WRITE);
+        } else if (HTTP.equalsIgnoreCase(dataAccessMode)) {
+            this.dsAccessor = DatasetAccessorFactory.createHTTP(serviceUri);
+            this.model = dsAccessor.getModel();
+        }
     }
 
 
@@ -67,9 +84,6 @@ public class Service {
      */
     private void insertMessage(String subject, String property, String object) {
         try {
-            ds.begin(ReadWrite.WRITE);
-            Model model = ds.getNamedModel(this.modelName);
-
             Statement stmt = model.createStatement
                     (
                             model.createResource(subject),
@@ -78,7 +92,11 @@ public class Service {
                     );
 
             model.add(stmt);
-            ds.commit();
+            if (LOCAL.equalsIgnoreCase(dataAccessMode)) {
+                ds.commit();
+            } else if (HTTP.equalsIgnoreCase(dataAccessMode)) {
+                dsAccessor.add(model);
+            }
         } catch (Exception e) {
             System.out.println("Exception while inserting message into jena tdb");
             ExceptionUtil.getStackTraceString(e, "insertMessage");

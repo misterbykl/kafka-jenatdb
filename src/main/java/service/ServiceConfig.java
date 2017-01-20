@@ -25,7 +25,8 @@ public class ServiceConfig {
      * 16/01/17 21:55
      */
     @Bean
-    public Service service(@Value("${jenatdb.config.modelname}") String modelName, @Value("${jenatdb.config.path}") String path) {
-        return new Service(modelName, path);
+    public Service service(@Value("${jenatdb.config.modelname}") String modelName, @Value("${jenatdb.config.path}") String path,
+                           @Value("${jenatdb.config.mode}") String dataAccessMode, @Value("${jenatdb.config.serviceuri}") String serviceUri) {
+        return new Service(modelName, path, dataAccessMode, serviceUri);
     }
 }
