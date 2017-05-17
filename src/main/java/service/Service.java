@@ -3,8 +3,9 @@ package service;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.DatasetAccessor;
 import org.apache.jena.query.DatasetAccessorFactory;
-import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.tdb.TDBFactory;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ public class Service {
     private final String LOCAL = "local";
     private final String HTTP = "http";
     private static Logger LOG = LogUtil.getRootLogger();
+    private String serviceUri = null;
     private String dataAccessMode = null;
     private Dataset ds;
     private DatasetAccessor dsAccessor;
@@ -41,10 +43,10 @@ public class Service {
      */
     Service(String modelName, String path, String dataAccessMode, String serviceUri) {
         this.dataAccessMode = dataAccessMode;
+        this.serviceUri = serviceUri;
         if (LOCAL.equalsIgnoreCase(dataAccessMode)) {
             this.ds = TDBFactory.createDataset(path);
             this.model = ds.getNamedModel(modelName);
-            this.ds.begin(ReadWrite.WRITE);
         } else if (HTTP.equalsIgnoreCase(dataAccessMode)) {
             this.dsAccessor = DatasetAccessorFactory.createHTTP(serviceUri);
             this.model = dsAccessor.getModel();
@@ -84,17 +86,22 @@ public class Service {
      */
     private void insertMessage(String subject, String property, String object) {
         try {
-            Statement stmt = model.createStatement
-                    (
-                            model.createResource(subject),
-                            model.createProperty(property),
-                            model.createResource(object)
-                    );
 
-            model.add(stmt);
             if (LOCAL.equalsIgnoreCase(dataAccessMode)) {
+                Statement stmt = model.createStatement
+                        (
+                                model.createResource(subject),
+                                model.createProperty(property),
+                                model.createResource(object)
+                        );
+                model.add(stmt);
                 ds.commit();
             } else if (HTTP.equalsIgnoreCase(dataAccessMode)) {
+                Resource sub = model.createResource(subject);
+                Resource obj = model.createResource(object);
+                Property pro = model.createProperty(this.serviceUri, property);
+                final Statement stmt = model.createStatement(sub, pro, obj);
+                model.add(stmt);
                 dsAccessor.add(model);
             }
         } catch (Exception e) {

@@ -52,7 +52,7 @@
         <spring.version>4.3.4.RELEASE</spring.version>
         <kafka.version>0.9.0.1</kafka.version>
         <jena.version>3.1.1</jena.version>
-        <fuseki.version>2.0.0</fuseki.version>
+        <fuseki.version>2.4.1</fuseki.version>
         <junit.version>4.12</junit.version>
     </properties>
     <dependencies>
@@ -86,12 +86,12 @@
             <version>${jena.version}</version>
         </dependency>
         <!-- fuseki -->
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>apache-jena-fuseki</artifactId>
-            <type>pom</type>
-            <version>${fuseki.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.apache.jena</groupId>-->
+            <!--<artifactId>apache-jena-fuseki</artifactId>-->
+            <!--<type>pom</type>-->
+            <!--<version>${fuseki.version}</version>-->
+        <!--</dependency>-->
         <!-- unit test -->
         <dependency>
             <groupId>junit</groupId>
